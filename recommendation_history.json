@@ -1,0 +1,98 @@
+{
+  "INTERNAL_ERROR": {
+    "Check Oracle alert logs and apply patches": {
+      "success": 18,
+      "partial": 5,
+      "failed": 2,
+      "total": 25
+    },
+    "Restart database": {
+      "success": 12,
+      "partial": 3,
+      "failed": 4,
+      "total": 19
+    },
+    "Review and optimize slow queries": {
+      "success": 8,
+      "partial": 2,
+      "failed": 5,
+      "total": 15
+    }
+  },
+  "TIMEOUT": {
+    "Increase session timeout parameters": {
+      "success": 14,
+      "partial": 6,
+      "failed": 3,
+      "total": 23
+    },
+    "Check lock contention and blocked sessions": {
+      "success": 16,
+      "partial": 4,
+      "failed": 2,
+      "total": 22
+    },
+    "Tune SGA and PGA parameters": {
+      "success": 10,
+      "partial": 5,
+      "failed": 4,
+      "total": 19
+    }
+  },
+  "MEMORY_ERROR": {
+    "Tune SGA and PGA memory parameters": {
+      "success": 22,
+      "partial": 3,
+      "failed": 2,
+      "total": 27
+    },
+    "Increase swap space and OS memory": {
+      "success": 15,
+      "partial": 4,
+      "failed": 6,
+      "total": 25
+    }
+  },
+  "STORAGE_FULL": {
+    "Add tablespace storage and clean up old data": {
+      "success": 28,
+      "partial": 2,
+      "failed": 1,
+      "total": 31
+    },
+    "Archive old logs and historical data": {
+      "success": 19,
+      "partial": 5,
+      "failed": 2,
+      "total": 26
+    }
+  },
+  "PERFORMANCE": {
+    "Analyze and rebuild indexes, update statistics": {
+      "success": 17,
+      "partial": 6,
+      "failed": 4,
+      "total": 27
+    },
+    "Check for full table scans and missing indexes": {
+      "success": 14,
+      "partial": 5,
+      "failed": 6,
+      "total": 25
+    }
+  },
+  "TEST_ISSUE": {
+    "Test Action A": {
+      "success": 12,
+      "partial": 0,
+      "failed": 0,
+      "total": 12
+    },
+    "Test Action B": {
+      "success": 0,
+      "partial": 0,
+      "failed": 8,
+      "total": 8
+    }
+  }
+}
