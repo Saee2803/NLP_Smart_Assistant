@@ -1,0 +1,91 @@
+from datetime import datetime, timedelta
+
+class ReasoningEngine:
+    def __init__(self, alerts, metrics, correlation_engine):
+        self.alerts = alerts
+        self.metrics = metrics
+        self.engine = correlation_engine
+
+    def answer(self, intent_data: dict) -> str:
+        intent = intent_data["intent"]
+        entities = intent_data["entities"]
+
+        alerts = self._filter_alerts(entities)
+
+        if not alerts:
+            return (
+                "I could not find alerts matching your exact criteria. "
+                "Showing latest known incident instead."
+            )
+
+        alerts.sort(key=lambda x: x["time"], reverse=True)
+
+        if intent == "timeline":
+            return self._timeline(alerts)
+
+        if intent == "root_cause":
+            return self._root_cause(alerts[0])
+
+        if intent == "status":
+            return self._status(alerts)
+
+        return self._summary(alerts[0])
+
+    # ---------------- HELPERS ----------------
+
+    def _filter_alerts(self, entities):
+        alerts = self.alerts
+
+        if "target" in entities:
+            alerts = [
+                a for a in alerts
+                if a.get("target") == entities["target"]
+            ]
+
+        if entities.get("day") == "yesterday":
+            yday = datetime.now() - timedelta(days=1)
+            alerts = [
+                a for a in alerts
+                if a["time"].date() == yday.date()
+            ]
+
+        if entities.get("time_range") == "night":
+            alerts = [
+                a for a in alerts
+                if 0 <= a["time"].hour <= 6
+            ]
+
+        return alerts
+
+    def _timeline(self, alerts):
+        first = alerts[-1]
+        last = alerts[0]
+
+        return (
+            f"Incident started at {first['time'].strftime('%H:%M')} "
+            f"and continued until {last['time'].strftime('%H:%M')} "
+            f"with {len(alerts)} critical alerts."
+        )
+
+    def _root_cause(self, alert):
+        rca = self.engine.analyze(alert)
+        return (
+            f"Root cause analysis for {alert['target']}: "
+            f"{rca['root_cause']}. "
+            f"Recommended action: {rca['recommendation']}."
+        )
+
+    def _status(self, alerts):
+        latest = alerts[0]
+        rca = self.engine.analyze(latest)
+        return (
+            f"Current status of {latest['target']} is "
+            f"{rca['current_status']}."
+        )
+
+    def _summary(self, alert):
+        return (
+            f"A {alert['severity']} alert occurred on "
+            f"{alert['target']} at {alert['time'].strftime('%H:%M')}."
+        )
+

@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OEM Database Monitoring System</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(135deg, #0c1929 0%, #1a1a2e 100%);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(90deg, #1e3a5f 0%, #2d5a87 100%);
+  padding: 12px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #3b82f6;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.logo {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: white;
+}
+.header-title h1 {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 600;
+}
+.header-title span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid #22c55e;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #22c55e;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.logout-btn {
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 15px 30px;
+  background: #151f32;
+  border-bottom: 1px solid #2d3748;
+}
+.nav-tab {
+  padding: 12px 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.nav-tab:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+}
+.nav-tab.active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* Main Container */
+.main-container {
+  padding: 25px 30px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Tab Content */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Dashboard Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 25px;
+}
+.stat-card {
+  background: linear-gradient(145deg, #1e293b, #1a2332);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #2d3748;
+  transition: all 0.3s;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  border-color: #3b82f6;
+}
+.stat-card.critical { border-left: 4px solid #ef4444; }
+.stat-card.warning { border-left: 4px solid #f59e0b; }
+.stat-card.success { border-left: 4px solid #22c55e; }
+.stat-card.info { border-left: 4px solid #3b82f6; }
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.stat-icon.critical { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.stat-icon.warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.stat-icon.success { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.stat-icon.info { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+
+.stat-label {
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin: 5px 0;
+}
+.stat-change {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Dashboard Sections */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+.dashboard-section {
+  background: linear-gradient(145deg, #1e293b, #1a2332);
+  border-radius: 12px;
+  border: 1px solid #2d3748;
+  overflow: hidden;
+}
+.section-header {
+  padding: 15px 20px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid #2d3748;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+.section-badge {
+  padding: 4px 10px;
+  background: rgba(59, 130, 246, 0.15);
+  border-radius: 12px;
+  font-size: 11px;
+  color: #60a5fa;
+}
+.section-body {
+  padding: 20px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Alert Items */
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+.alert-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+.alert-item.critical { border-left-color: #ef4444; }
+.alert-item.warning { border-left-color: #f59e0b; }
+.alert-item.info { border-left-color: #3b82f6; }
+
+.alert-severity {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.alert-severity.critical { background: #ef4444; }
+.alert-severity.warning { background: #f59e0b; }
+.alert-severity.info { background: #3b82f6; }
+
+.alert-content { flex: 1; }
+.alert-target {
+  font-weight: 600;
+  color: #e0e0e0;
+  font-size: 13px;
+}
+.alert-message {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+.alert-time {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Database List */
+.db-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.db-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.db-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.db-name {
+  font-weight: 600;
+  color: #e0e0e0;
+  font-size: 13px;
+}
+.db-alerts {
+  font-size: 11px;
+  color: #94a3b8;
+}
+.db-status {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.db-status.critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+.db-status.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+.db-status.healthy {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+/* History Table */
+.history-controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.search-box {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 18px;
+  background: #1e293b;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 14px;
+}
+.search-box:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+.filter-select {
+  padding: 12px 18px;
+  background: #1e293b;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.history-table th {
+  padding: 14px 18px;
+  text-align: left;
+  background: rgba(0,0,0,0.3);
+  color: #94a3b8;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.history-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #2d3748;
+  font-size: 13px;
+}
+.history-table tr:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+.severity-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.severity-badge.critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+.severity-badge.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+.severity-badge.info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+/* Assistant Chat */
+.assistant-container {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+  height: calc(100vh - 200px);
+}
+.chat-main {
+  background: linear-gradient(145deg, #1e293b, #1a2332);
+  border-radius: 12px;
+  border: 1px solid #2d3748;
+  display: flex;
+  flex-direction: column;
+}
+.chat-header {
+  padding: 18px 22px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid #2d3748;
+  position: relative;
+}
+.chat-header h2 {
+  font-size: 16px;
+  color: #e0e0e0;
+  margin-bottom: 5px;
+}
+.chat-header p {
+  font-size: 12px;
+  color: #64748b;
+}
+.new-chat-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.new-chat-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+.message {
+  margin-bottom: 18px;
+  display: flex;
+  gap: 12px;
+}
+.message.user {
+  flex-direction: row-reverse;
+}
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.message.assistant .message-avatar {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+.message.user .message-avatar {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+.message-content {
+  max-width: 75%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.message.assistant .message-content {
+  background: #2d3748;
+  border-bottom-left-radius: 4px;
+}
+.message.user .message-content {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-bottom-right-radius: 4px;
+}
+.chat-input-container {
+  padding: 18px 22px;
+  background: rgba(0,0,0,0.2);
+  border-top: 1px solid #2d3748;
+  display: flex;
+  gap: 12px;
+}
+.chat-input {
+  flex: 1;
+  padding: 14px 18px;
+  background: #151f32;
+  border: 1px solid #2d3748;
+  border-radius: 10px;
+  color: #e0e0e0;
+  font-size: 14px;
+  resize: none;
+}
+.chat-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+.send-btn {
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+/* Quick Questions Sidebar */
+.quick-questions {
+  background: linear-gradient(145deg, #1e293b, #1a2332);
+  border-radius: 12px;
+  border: 1px solid #2d3748;
+  padding: 20px;
+}
+.quick-questions h3 {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.quick-btn {
+  width: 100%;
+  padding: 12px 15px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+}
+.quick-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* Insights Section */
+.insights-panel {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #2d3748;
+}
+.insight-item {
+  padding: 10px 12px;
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #f59e0b;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #e0e0e0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  color: #94a3b8;
+}
+.loading-dots span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #3b82f6;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out;
+}
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* Full Width Section */
+.full-section {
+  grid-column: 1 / -1;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.page-btn {
+  padding: 8px 14px;
+  background: #1e293b;
+  border: 1px solid #2d3748;
+  border-radius: 6px;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 13px;
+}
+.page-btn:hover, .page-btn.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">OEM</div>
+    <div class="header-title">
+      <h1>Oracle Enterprise Manager</h1>
+      <span>Database Monitoring & Analysis System</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-indicator">
+      <span class="status-dot"></span>
+      <span>System Online</span>
+    </div>
+    <span style="color: #94a3b8; font-size: 13px;">Historical Data Analysis Mode</span>
+    <a href="/logout" class="logout-btn">Logout</a>
+  </div>
+</header>
+
+<!-- Navigation -->
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+  <button class="nav-tab" onclick="showTab('history')">📜 History</button>
+  <button class="nav-tab" onclick="showTab('assistant')">🤖 Assistant</button>
+</nav>
+
+<!-- Main Container -->
+<main class="main-container">
+  
+  <!-- Dashboard Tab -->
+  <div id="dashboard" class="tab-content active">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card info">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Total Databases</div>
+            <div class="stat-value" id="totalDatabases">--</div>
+            <div class="stat-change">Monitored targets</div>
+          </div>
+          <div class="stat-icon info">🗄️</div>
+        </div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Total Alerts</div>
+            <div class="stat-value" id="totalAlerts">--</div>
+            <div class="stat-change">From historical data</div>
+          </div>
+          <div class="stat-icon warning">⚠️</div>
+        </div>
+      </div>
+      <div class="stat-card critical">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Critical Alerts</div>
+            <div class="stat-value" id="criticalAlerts">--</div>
+            <div class="stat-change">Require attention</div>
+          </div>
+          <div class="stat-icon critical">🔴</div>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-header">
+          <div>
+            <div class="stat-label">Top Issue Type</div>
+            <div class="stat-value" id="topIssueType" style="font-size: 18px;">--</div>
+            <div class="stat-change" id="topIssueCount">Most frequent</div>
+          </div>
+          <div class="stat-icon success">📈</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      <!-- Recent Alerts -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <span class="section-title">🚨 Recent Alerts</span>
+          <span class="section-badge" id="recentAlertCount">Loading...</span>
+        </div>
+        <div class="section-body" id="recentAlerts">
+          <div class="loading">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <span>Loading alerts...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Problematic Databases -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <span class="section-title">⚡ Top Problematic Databases</span>
+          <span class="section-badge">By Alert Count</span>
+        </div>
+        <div class="section-body" id="topDatabases">
+          <div class="loading">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <span>Analyzing databases...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issue Distribution -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <span class="section-title">📊 Issue Type Distribution</span>
+          <span class="section-badge">Historical Analysis</span>
+        </div>
+        <div class="section-body" id="issueDistribution">
+          <div class="loading">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <span>Loading distribution...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Pattern Analysis -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <span class="section-title">🕐 Alert Time Patterns</span>
+          <span class="section-badge">Peak Hours</span>
+        </div>
+        <div class="section-body" id="timePatterns">
+          <div class="loading">
+            <div class="loading-dots"><span></span><span></span><span></span></div>
+            <span>Analyzing patterns...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights Summary -->
+    <div class="dashboard-section full-section">
+      <div class="section-header">
+        <span class="section-title">💡 Key Insights from Historical OEM Data</span>
+        <span class="section-badge">Auto-Generated</span>
+      </div>
+      <div class="section-body" id="keyInsights">
+        <div class="loading">
+          <div class="loading-dots"><span></span><span></span><span></span></div>
+          <span>Generating insights...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Tab -->
+  <div id="history" class="tab-content">
+    <div class="history-controls">
+      <input type="text" class="search-box" id="historySearch" placeholder="🔍 Search by database name, alert type, or message...">
+      <select class="filter-select" id="severityFilter">
+        <option value="">All Severities</option>
+        <option value="CRITICAL">Critical</option>
+        <option value="WARNING">Warning</option>
+        <option value="INFO">Info</option>
+      </select>
+      <select class="filter-select" id="typeFilter">
+        <option value="">All Types</option>
+        <option value="DB_DOWN">DB_DOWN</option>
+        <option value="INTERNAL_ERROR">INTERNAL_ERROR</option>
+        <option value="HIGH_CPU">HIGH_CPU</option>
+        <option value="TABLESPACE">TABLESPACE</option>
+      </select>
+      <select class="filter-select" id="timeFilter">
+        <option value="">All Times</option>
+        <option value="night">Night (12AM-6AM)</option>
+        <option value="morning">Morning (6AM-12PM)</option>
+        <option value="afternoon">Afternoon (12PM-6PM)</option>
+        <option value="evening">Evening (6PM-12AM)</option>
+      </select>
+    </div>
+
+    <div style="background: #1e293b; border-radius: 12px; overflow: hidden;">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Database</th>
+            <th>Alert Type</th>
+            <th>Severity</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+          <tr>
+            <td colspan="5" class="loading">
+              <div class="loading-dots"><span></span><span></span><span></span></div>
+              <span>Loading history...</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" id="historyPagination"></div>
+  </div>
+
+  <!-- Assistant Tab -->
+  <div id="assistant" class="tab-content">
+    <div class="assistant-container">
+      <div class="chat-main">
+        <div class="chat-header">
+          <h2>🤖 OEM Database Assistant</h2>
+          <p>Ask questions about your database monitoring data. I analyze historical OEM alerts to provide insights.</p>
+          <button class="new-chat-btn" onclick="startNewConversation()" title="Start fresh conversation">🔄 New Chat</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="message assistant">
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+              Welcome! I'm your OEM Database Monitoring Assistant. I analyze historical alert data parsed from OEM XML files to provide insights.<br><br>
+              <strong>You can ask me:</strong><br>
+              • Which database is most unstable?<br>
+              • Why does a specific database go down frequently?<br>
+              • What alerts occurred around 2 AM?<br>
+              • What is the root cause of repeated DB_DOWN alerts?<br>
+              • Predict the next likely issue and give recommendations
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <textarea class="chat-input" id="chatInput" placeholder="Ask about your databases, alerts, patterns, or get recommendations..." rows="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+          <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+      
+      <div class="quick-questions">
+        <h3>Quick Questions</h3>
+        <button class="quick-btn" onclick="askQuestion('Give me a full situation overview')">📊 Situation Overview</button>
+        <button class="quick-btn" onclick="askQuestion('Is MIDEVSTBN stable now?')">🔍 MIDEVSTBN Stability?</button>
+        <button class="quick-btn" onclick="askQuestion('Why does MIDEVSTB show frequent alerts?')">⚠️ MIDEVSTB Root Cause?</button>
+        <button class="quick-btn" onclick="askQuestion('Which databases are in critical state?')">🔴 Critical Databases?</button>
+        <button class="quick-btn" onclick="askQuestion('What are the top issue types affecting our systems?')">🎯 Top Issue Types?</button>
+        <button class="quick-btn" onclick="askQuestion('Predict the next likely failure and give recommendations')">🔮 Predictions?</button>
+        
+        <div class="insights-panel">
+          <h3 style="margin-bottom: 10px;">💡 Auto Insights</h3>
+          <div id="sidebarInsights">
+            <div class="insight-item">Loading insights from historical data...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// Tab Navigation
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+  
+  if (tabId === 'history' && !historyLoaded) loadHistory();
+}
+
+// Global data
+let dashboardData = null;
+let historyData = [];
+let historyLoaded = false;
+let currentPage = 1;
+const pageSize = 50;
+
+// Load Dashboard Data
+async function loadDashboard() {
+  try {
+    const response = await fetch('/api/dashboard/oem-summary');
+    const data = await response.json();
+    dashboardData = data;
+    renderDashboard(data);
+  } catch (error) {
+    console.error('Dashboard load error:', error);
+  }
+}
+
+function renderDashboard(data) {
+  // Stats
+  document.getElementById('totalDatabases').textContent = data.total_databases || 0;
+  document.getElementById('totalAlerts').textContent = (data.total_alerts || 0).toLocaleString();
+  document.getElementById('criticalAlerts').textContent = (data.critical_count || 0).toLocaleString();
+  
+  if (data.top_issues && data.top_issues.length > 0) {
+    document.getElementById('topIssueType').textContent = data.top_issues[0].type || '--';
+    document.getElementById('topIssueCount').textContent = (data.top_issues[0].count || 0).toLocaleString() + ' occurrences';
+  }
+
+  // Recent Alerts
+  const alertsContainer = document.getElementById('recentAlerts');
+  if (data.recent_alerts && data.recent_alerts.length > 0) {
+    document.getElementById('recentAlertCount').textContent = data.recent_alerts.length + ' Recent';
+    alertsContainer.innerHTML = data.recent_alerts.slice(0, 10).map(alert => `
+      <div class="alert-item ${(alert.severity || 'info').toLowerCase()}">
+        <div class="alert-severity ${(alert.severity || 'info').toLowerCase()}"></div>
+        <div class="alert-content">
+          <div class="alert-target">${alert.target || 'Unknown'}</div>
+          <div class="alert-message">${alert.display_alert_type || alert.issue_type || alert.message || 'Alert'}</div>
+        </div>
+        <div class="alert-time">${formatTime(alert.time || alert.first_seen)}</div>
+      </div>
+    `).join('');
+  } else {
+    alertsContainer.innerHTML = '<div style="color: #64748b; text-align: center; padding: 20px;">No recent alerts from historical data</div>';
+  }
+
+  // Top Databases
+  const dbContainer = document.getElementById('topDatabases');
+  if (data.top_databases && data.top_databases.length > 0) {
+    dbContainer.innerHTML = data.top_databases.slice(0, 6).map((db, i) => `
+      <div class="db-item">
+        <div class="db-info">
+          <div class="db-icon">${i + 1}</div>
+          <div>
+            <div class="db-name">${db.name || db.target}</div>
+            <div class="db-alerts">${(db.alert_count || db.count || 0).toLocaleString()} alerts</div>
+          </div>
+        </div>
+        <span class="db-status ${db.alert_count > 1000 ? 'critical' : db.alert_count > 500 ? 'warning' : 'healthy'}">
+          ${db.alert_count > 1000 ? 'High Risk' : db.alert_count > 500 ? 'Medium' : 'Low'}
+        </span>
+      </div>
+    `).join('');
+  } else {
+    dbContainer.innerHTML = '<div style="color: #64748b; text-align: center; padding: 20px;">No database data available</div>';
+  }
+
+  // Issue Distribution
+  const issueContainer = document.getElementById('issueDistribution');
+  if (data.top_issues && data.top_issues.length > 0) {
+    const maxCount = Math.max(...data.top_issues.map(i => i.count));
+    issueContainer.innerHTML = data.top_issues.slice(0, 6).map(issue => `
+      <div style="margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="font-size: 13px; color: #e0e0e0;">${issue.type}</span>
+          <span style="font-size: 12px; color: #94a3b8;">${issue.count.toLocaleString()}</span>
+        </div>
+        <div style="height: 8px; background: #2d3748; border-radius: 4px; overflow: hidden;">
+          <div style="height: 100%; width: ${(issue.count/maxCount)*100}%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 4px;"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Time Patterns
+  const timeContainer = document.getElementById('timePatterns');
+  if (data.time_patterns && data.time_patterns.length > 0) {
+    timeContainer.innerHTML = data.time_patterns.map(tp => `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; margin-bottom: 8px;">
+        <span style="font-size: 13px;">🕐 ${tp.hour}:00 - ${(tp.hour+1) % 24}:00</span>
+        <span style="font-size: 12px; color: #f59e0b;">${tp.count.toLocaleString()} alerts</span>
+      </div>
+    `).join('');
+  } else {
+    timeContainer.innerHTML = '<div style="color: #64748b; text-align: center; padding: 20px;">Analyzing time patterns...</div>';
+  }
+
+  // Key Insights
+  const insightsContainer = document.getElementById('keyInsights');
+  // Generate intelligent DBA insights from data
+  let insights = [];
+  
+  // Overall health assessment
+  const totalAlerts = data.total_alerts || 0;
+  const criticalPct = data.critical_count && totalAlerts > 0 ? ((data.critical_count / totalAlerts) * 100).toFixed(1) : 0;
+  
+  if (criticalPct > 80) {
+    insights.push(`⚠️ **CRITICAL SITUATION**: ${criticalPct}% of all alerts are CRITICAL severity. Immediate DBA attention required.`);
+  } else if (criticalPct > 50) {
+    insights.push(`🔶 **ELEVATED RISK**: ${criticalPct}% critical alert rate indicates systemic issues requiring investigation.`);
+  }
+  
+  // Top database assessment
+  if (data.top_databases && data.top_databases.length > 0) {
+    const topDb = data.top_databases[0];
+    const dbAlerts = topDb.alert_count || topDb.count || 0;
+    const dbPct = totalAlerts > 0 ? ((dbAlerts / totalAlerts) * 100).toFixed(1) : 0;
+    insights.push(`🔍 **${topDb.name || topDb.target}** accounts for ${dbPct}% of total alerts (${dbAlerts.toLocaleString()}). Priority target for investigation.`);
+  }
+  
+  // Issue type assessment
+  if (data.top_issues && data.top_issues.length > 0) {
+    const topIssue = data.top_issues[0];
+    const issuePct = totalAlerts > 0 ? ((topIssue.count / totalAlerts) * 100).toFixed(1) : 0;
+    insights.push(`🎯 **${topIssue.type}** is the dominant issue type (${issuePct}% of all alerts). Review error handling and system logs.`);
+  }
+  
+  // Time pattern assessment
+  if (data.time_patterns && data.time_patterns.length > 0) {
+    const peakHour = data.time_patterns[0];
+    insights.push(`🕐 Alert peak at **${peakHour.hour}:00** (${peakHour.count.toLocaleString()} alerts) - correlate with scheduled jobs/maintenance windows.`);
+  }
+  
+  insightsContainer.innerHTML = insights.map(i => `<div class="insight-item">${i.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`).join('');
+  
+  // Update sidebar insights with top 3
+  const sidebarHtml = insights.slice(0, 3).map(i => `<div class="insight-item">${i.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`).join('');
+  document.getElementById('sidebarInsights').innerHTML = sidebarHtml || '<div class="insight-item">No insights available</div>';
+}
+
+// Load History
+async function loadHistory() {
+  try {
+    const response = await fetch('/api/alerts?limit=1000');
+    const data = await response.json();
+    historyData = data.alerts || data || [];
+    historyLoaded = true;
+    renderHistory();
+  } catch (error) {
+    console.error('History load error:', error);
+  }
+}
+
+function renderHistory() {
+  const search = document.getElementById('historySearch').value.toLowerCase();
+  const severity = document.getElementById('severityFilter').value;
+  const type = document.getElementById('typeFilter').value;
+  const time = document.getElementById('timeFilter').value;
+  
+  let filtered = historyData.filter(alert => {
+    if (search && !JSON.stringify(alert).toLowerCase().includes(search)) return false;
+    if (severity && (alert.severity || '').toUpperCase() !== severity) return false;
+    if (type && (alert.issue_type || alert.alert_type || '') !== type) return false;
+    if (time) {
+      const hour = new Date(alert.time || alert.first_seen).getHours();
+      if (time === 'night' && (hour >= 6)) return false;
+      if (time === 'morning' && (hour < 6 || hour >= 12)) return false;
+      if (time === 'afternoon' && (hour < 12 || hour >= 18)) return false;
+      if (time === 'evening' && (hour < 18)) return false;
+    }
+    return true;
+  });
+
+  const start = (currentPage - 1) * pageSize;
+  const paged = filtered.slice(start, start + pageSize);
+  
+  const tbody = document.getElementById('historyTableBody');
+  if (paged.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #64748b; padding: 30px;">No alerts match your filters</td></tr>';
+  } else {
+    tbody.innerHTML = paged.map(alert => `
+      <tr>
+        <td style="color: #94a3b8;">${formatDateTime(alert.time || alert.first_seen)}</td>
+        <td style="color: #e0e0e0; font-weight: 500;">${alert.target || 'Unknown'}</td>
+        <td>${alert.display_alert_type || alert.issue_type || alert.alert_type || 'Unknown'}</td>
+        <td><span class="severity-badge ${(alert.severity || 'info').toLowerCase()}">${alert.severity || 'INFO'}</span></td>
+        <td style="color: #94a3b8; max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${alert.message || alert.description || '-'}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const pagination = document.getElementById('historyPagination');
+  if (totalPages > 1) {
+    let html = '';
+    if (currentPage > 1) html += `<button class="page-btn" onclick="goToPage(${currentPage-1})">← Prev</button>`;
+    for (let i = Math.max(1, currentPage-2); i <= Math.min(totalPages, currentPage+2); i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+    if (currentPage < totalPages) html += `<button class="page-btn" onclick="goToPage(${currentPage+1})">Next →</button>`;
+    pagination.innerHTML = html;
+  } else {
+    pagination.innerHTML = '';
+  }
+}
+
+function goToPage(page) {
+  currentPage = page;
+  renderHistory();
+}
+
+// History Filters
+document.getElementById('historySearch')?.addEventListener('input', () => { currentPage = 1; renderHistory(); });
+document.getElementById('severityFilter')?.addEventListener('change', () => { currentPage = 1; renderHistory(); });
+document.getElementById('typeFilter')?.addEventListener('change', () => { currentPage = 1; renderHistory(); });
+document.getElementById('timeFilter')?.addEventListener('change', () => { currentPage = 1; renderHistory(); });
+
+// =====================================================
+// CHAT SESSION STATE (CRITICAL FIX)
+// =====================================================
+// Generate unique session ID per browser session
+let chatSessionId = sessionStorage.getItem('chatSessionId');
+if (!chatSessionId) {
+  chatSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  sessionStorage.setItem('chatSessionId', chatSessionId);
+}
+
+// Track if this is a new conversation (first message after page load/reset)
+let isNewConversation = true;
+
+// Track last target for context change detection
+let lastTarget = null;
+
+// Track if system is ready
+let systemReady = false;
+
+// PRODUCTION FIX: Handle page load/refresh
+// NOTE: Don't reset session on refresh - preserve conversation context
+window.addEventListener('load', async function() {
+  console.log('[CHAT] Page loaded, session:', chatSessionId);
+  
+  // Check if we're continuing an existing session or starting fresh
+  const existingSession = sessionStorage.getItem('chatSessionId');
+  if (existingSession && existingSession === chatSessionId) {
+    // Existing session - mark as follow-up mode
+    isNewConversation = false;
+    console.log('[CHAT] Continuing existing session, follow-up mode');
+  } else {
+    // New session - this is first message
+    isNewConversation = true;
+    console.log('[CHAT] New session, new conversation mode');
+  }
+  
+  // Don't reset server session on page load - preserve scope
+  // Only reset when user explicitly clicks "New Conversation"
+  
+  // Check system status
+  checkSystemReady();
+});
+
+async function checkSystemReady() {
+  try {
+    const resp = await fetch('/api/chat/debug/context', { credentials: 'include' });
+    if (resp.ok) {
+      systemReady = true;
+      console.log('[CHAT] System is ready');
+    }
+  } catch (e) {
+    // System might still be loading, retry
+    setTimeout(checkSystemReady, 2000);
+  }
+}
+
+async function startNewConversation() {
+  console.log('[CHAT] Starting new conversation');
+  
+  // Reset session on server
+  try {
+    await fetch('/api/chat/reset', { method: 'POST', credentials: 'include' });
+    console.log('[CHAT] Server session reset');
+  } catch (e) {
+    console.log('[CHAT] Reset endpoint not available:', e);
+  }
+  
+  // Generate new session ID
+  chatSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  sessionStorage.setItem('chatSessionId', chatSessionId);
+  
+  // Clear chat messages except welcome
+  const container = document.getElementById('chatMessages');
+  container.innerHTML = `
+    <div class="message assistant">
+      <div class="message-avatar">🤖</div>
+      <div class="message-content">
+        Welcome! I'm your OEM Database Monitoring Assistant. I analyze historical alert data parsed from OEM XML files to provide insights.<br><br>
+        <strong>You can ask me:</strong><br>
+        • Which database is most unstable?<br>
+        • Why does a specific database go down frequently?<br>
+        • What alerts occurred around 2 AM?<br>
+        • What is the root cause of repeated DB_DOWN alerts?<br>
+        • Predict the next likely issue and give recommendations
+      </div>
+    </div>
+  `;
+  
+  // Mark as new conversation
+  isNewConversation = true;
+  lastTarget = null;  // Reset target tracking
+  
+  document.getElementById('chatInput').value = '';
+  document.getElementById('chatInput').focus();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const userInput = input.value;  // RAW input - no trim yet
+  const message = userInput.trim();
+  if (!message) return;
+  
+  // =====================================================
+  // MANDATORY DEBUG VALIDATION (REMOVE AFTER FIX VERIFIED)
+  // These MUST be character-by-character identical
+  // =====================================================
+  console.log('============ PASSTHROUGH VALIDATION ============');
+  console.log('USER INPUT :', JSON.stringify(message));
+  console.log('API PAYLOAD:', JSON.stringify(message));
+  console.log('IDENTICAL  :', message === message ? 'YES ✓' : 'NO ✗ BUG!');
+  console.log('=================================================');
+  
+  // =====================================================
+  // CONTEXT CHANGE DETECTION
+  // Detect if user is switching to a different database
+  // =====================================================
+  const dbPattern = /\b(for|database|db)\s+([A-Z][A-Z0-9_]+)/i;
+  const dbMatch = message.match(dbPattern);
+  const currentTarget = dbMatch ? dbMatch[2].toUpperCase() : null;
+  
+  // If target changed, this is a NEW conversation context
+  let forceNewConversation = false;
+  if (currentTarget && lastTarget && currentTarget !== lastTarget) {
+    console.log('[CONTEXT] Target changed:', lastTarget, '->', currentTarget);
+    forceNewConversation = true;
+  }
+  if (currentTarget) {
+    lastTarget = currentTarget;
+  }
+  
+  // Add user message to UI
+  addMessage(message, 'user');
+  input.value = '';
+  
+  const loadingId = 'loading-' + Date.now();
+  addLoadingMessage(loadingId);
+  
+  // =====================================================
+  // CRITICAL: Send RAW user input - NO MUTATION
+  // Frontend is a PASSTHROUGH - backend owns NLP
+  // =====================================================
+  const payload = {
+    message: message,  // EXACT user text - no modification
+    session_id: chatSessionId,
+    new_conversation: isNewConversation || forceNewConversation
+  };
+  
+  // DEBUG LOGGING
+  console.log('========== CHAT REQUEST DEBUG ==========');
+  console.log('session_id:', chatSessionId);
+  console.log('new_conversation:', payload.new_conversation);
+  console.log('forceNewConversation:', forceNewConversation);
+  console.log('payload:', JSON.stringify(payload, null, 2));
+  console.log('=========================================');
+  
+  try {
+    const response = await fetch('/api/chat/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    });
+    
+    console.log('[CHAT] Response status:', response.status);
+    
+    // Handle authentication error
+    if (response.status === 401) {
+      removeLoadingMessage(loadingId);
+      addMessage('Session expired. Please <a href="/login">log in again</a>.', 'assistant');
+      return;
+    }
+    
+    // Handle other errors
+    if (!response.ok) {
+      removeLoadingMessage(loadingId);
+      const errorData = await response.json().catch(() => ({}));
+      addMessage('Error: ' + (errorData.detail || 'Request failed'), 'assistant');
+      return;
+    }
+    
+    const data = await response.json();
+    console.log('[CHAT] Response data:', data);
+    
+    removeLoadingMessage(loadingId);
+    
+    // Get the answer from response
+    const reply = data.answer || data.reply || 'No response received.';
+    addMessage(reply, 'assistant');
+    
+    // =====================================================
+    // CRITICAL: After first successful message, ALL 
+    // subsequent messages are follow-ups (new_conversation=false)
+    // DO NOT reset isNewConversation anywhere else
+    // =====================================================
+    if (isNewConversation) {
+      console.log('[CHAT] First message sent, switching to follow-up mode');
+      console.log('[CHAT] session_id will remain:', chatSessionId);
+      isNewConversation = false;
+    }
+    
+  } catch (error) {
+    console.error('[CHAT] Error:', error);
+    removeLoadingMessage(loadingId);
+    addMessage('Connection issue. Please verify the server is running and try again.', 'assistant');
+  }
+}
+
+function askQuestion(question) {
+  document.getElementById('chatInput').value = question;
+  sendMessage();
+}
+
+function addMessage(text, type) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `message ${type}`;
+  div.innerHTML = `
+    <div class="message-avatar">${type === 'user' ? '👤' : '🤖'}</div>
+    <div class="message-content">${text.replace(/\n/g, '<br>')}</div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function addLoadingMessage(id) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'message assistant';
+  div.innerHTML = `
+    <div class="message-avatar">🤖</div>
+    <div class="message-content">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      Analyzing historical OEM data...
+    </div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeLoadingMessage(id) {
+  document.getElementById(id)?.remove();
+}
+
+// Enter key to send
+document.getElementById('chatInput')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// Utility Functions
+function formatTime(dateStr) {
+  if (!dateStr) return '--';
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDateTime(dateStr) {
+  if (!dateStr) return '--';
+  const d = new Date(dateStr);
+  return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  loadDashboard();
+});
+</script>
+
+</body>
+</html>
+

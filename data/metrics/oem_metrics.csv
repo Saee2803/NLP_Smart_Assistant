@@ -1,0 +1,17 @@
+collection_name,timestamp,target_name,target_type,metric_name,metric_column,value
+COH_CACHE_CacheSizeColl,2025-12-24T16:13:31.398+05:30,"/EMGC_GCDomain/GCDomain/defaultCoherenceCluster/""oracle.wls.internal.wsm:LocalCache""/oracle.wls.internal.wsm.cache.local.sts",oracle_coherence_cache,COH_CACHE_CacheSize,TotalUnits,
+COH_CACHE_CacheSizeColl,2025-12-24T16:13:31.398+05:30,"/EMGC_GCDomain/GCDomain/defaultCoherenceCluster/""oracle.wls.internal.wsm:LocalCache""/oracle.wls.internal.wsm.cache.local.sts",oracle_coherence_cache,COH_CACHE_CacheSize,UnitFactor,1
+COH_CACHE_CacheSizeColl,2025-12-24T16:13:31.398+05:30,"/EMGC_GCDomain/GCDomain/defaultCoherenceCluster/""oracle.wls.internal.wsm:LocalCache""/oracle.wls.internal.wsm.cache.local.sts",oracle_coherence_cache,COH_CACHE_CacheSize,TotalCacheObjects,0
+COH_CACHE_CacheSizeColl,2025-12-24T16:13:31.398+05:30,"/EMGC_GCDomain/GCDomain/defaultCoherenceCluster/""oracle.wls.internal.wsm:LocalCache""/oracle.wls.internal.wsm.cache.local.sts",oracle_coherence_cache,COH_CACHE_CacheSize,TotalMemoryBytes,
+COH_CACHE_CacheSizeColl,2025-12-24T16:13:31.398+05:30,"/EMGC_GCDomain/GCDomain/defaultCoherenceCluster/""oracle.wls.internal.wsm:LocalCache""/oracle.wls.internal.wsm.cache.local.sts",oracle_coherence_cache,COH_CACHE_CacheSize,TotalMemoryMB,
+COH_CACHE_CacheSizeColl,2025-12-24T16:13:31.398+05:30,"/EMGC_GCDomain/GCDomain/defaultCoherenceCluster/""oracle.wls.internal.wsm:LocalCache""/oracle.wls.internal.wsm.cache.local.sts",oracle_coherence_cache,COH_CACHE_CacheSize,AvgObjectSize,
+Response,2025-12-24T16:13:32.208+05:30,midev2server:4889_Management_Service_CONSOLE,oracle_oms_console,Response,Status,1
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,heapUsed.value,930.574
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,heapUsedPercentage.value,56
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,jdkVendor.value,Oracle Corporation
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,jdkVersion.value,1.8.0_261
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,cpuUsage.percentage,0.513
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,daemonThreads.active,270
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,threads.active,275
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,nurserySize.value,
+jvm_metric,2025-12-24T16:13:36.180+05:30,/EMGC_GCDomain/GCDomain/EMGC_OMS1,weblogic_j2eeserver,jvm,heapFree.value,731.165

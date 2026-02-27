@@ -1,0 +1,38 @@
+{
+  "last_updated": "2026-01-31T13:57:45.617289",
+  "incident_count": 2,
+  "incidents": {
+    "acad26b27eba8753": {
+      "signature": "acad26b27eba8753",
+      "fuzzy_signature": "30e893b2caeb",
+      "database": "UNKNOWN",
+      "error_type": "",
+      "category": "GENERAL",
+      "first_seen": "2025-06-23T10:06:00",
+      "last_seen": "2025-06-24T18:59:00",
+      "alert_count": 10,
+      "peak_alert_rate": 0,
+      "resolution_outcome": "unknown",
+      "time_to_stabilize_hours": 0,
+      "dba_actions": [],
+      "recurrence_count": 10,
+      "notes": ""
+    },
+    "fac3c1ad6f3071ad": {
+      "signature": "fac3c1ad6f3071ad",
+      "fuzzy_signature": "b0507e47e7de",
+      "database": "UNKNOWN",
+      "error_type": "",
+      "category": "GENERAL",
+      "first_seen": "2025-06-23T10:06:00",
+      "last_seen": "2025-06-24T18:59:00",
+      "alert_count": 60,
+      "peak_alert_rate": 0,
+      "resolution_outcome": "unknown",
+      "time_to_stabilize_hours": 0,
+      "dba_actions": [],
+      "recurrence_count": 60,
+      "notes": ""
+    }
+  }
+}

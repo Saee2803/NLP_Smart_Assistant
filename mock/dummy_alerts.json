@@ -1,0 +1,75 @@
+{
+  "ongoing": [
+    {
+      "time": "2025-01-10 14:22:10",
+      "server": "DB-SERVER-01",
+      "database": "FINDB",
+      "severity": "CRITICAL",
+      "message": "CPU usage reached 98%"
+    },
+    {
+      "time": "2025-01-10 14:23:05",
+      "server": "DB-SERVER-02",
+      "database": "HRDB",
+      "severity": "WARNING",
+      "message": "Tablespace usage above 85%"
+    },
+    {
+      "time": "2025-01-10 14:24:40",
+      "server": "DB-SERVER-03",
+      "database": "PAYROLL",
+      "severity": "INFO",
+      "message": "Backup started successfully"
+    }
+  ],
+
+  "history": [
+    {
+      "time": "2025-01-09 09:10:00",
+      "server": "DB-SERVER-01",
+      "database": "FINDB",
+      "severity": "CRITICAL",
+      "message": "Redo log switch delay detected"
+    },
+    {
+      "time": "2025-01-09 11:45:20",
+      "server": "DB-SERVER-02",
+      "database": "HRDB",
+      "severity": "WARNING",
+      "message": "High temp usage observed"
+    },
+    {
+      "time": "2025-01-08 16:20:50",
+      "server": "DB-SERVER-03",
+      "database": "PAYROLL",
+      "severity": "INFO",
+      "message": "Archive log backup completed"
+    },
+    {
+      "time": "2025-01-07 12:05:15",
+      "server": "DB-SERVER-04",
+      "database": "CRMDB",
+      "severity": "CRITICAL",
+      "message": "FRA usage above 92%"
+    }
+  ],
+
+  "top_problematic_databases": [
+    {
+      "database": "FINDB",
+      "server": "DB-SERVER-01",
+      "issue_count": 14
+    },
+    {
+      "database": "HRDB",
+      "server": "DB-SERVER-02",
+      "issue_count": 9
+    },
+    {
+      "database": "PAYROLL",
+      "server": "DB-SERVER-03",
+      "issue_count": 6
+    }
+  ]
+}
+

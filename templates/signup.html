@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup</title>
+    <style>
+        body {
+            background: #0f172a;
+            font-family: 'Segoe UI', sans-serif;
+            color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .box {
+            background: #1e293b;
+            padding: 30px;
+            width: 350px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e5e7eb;
+        }
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            background: #2563eb;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .link {
+            margin-top: 12px;
+            text-align: center;
+        }
+        a { color: #38bdf8; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Create Account</h2>
+
+    <input id="username" placeholder="Enter username">
+    <input id="password" type="password" placeholder="Enter password">
+
+    <button onclick="signup()">Signup</button>
+
+    <div class="link">
+        Already have an account? <a href="/login">Login</a>
+    </div>
+
+    <p id="msg"></p>
+</div>
+
+<script>
+async function signup() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    const res = await fetch("/signup", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password})
+    });
+
+    const data = await res.json();
+    document.getElementById("msg").innerText = data.message;
+
+    if (data.success) {
+        setTimeout(() => window.location.href = "/login", 1500);
+    }
+}
+</script>
+
+</body>
+</html>
+

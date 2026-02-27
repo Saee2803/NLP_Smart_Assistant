@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | NLP Incident Assistant</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #0f172a;
+        font-family: 'Segoe UI', sans-serif;
+        color: #e5e7eb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .box {
+        background: #1e293b;
+        padding: 30px;
+        border-radius: 12px;
+        width: 360px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #38bdf8;
+        font-weight: 600;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        margin-bottom: 12px;
+        border-radius: 8px;
+        background: #0f172a;
+        color: #e5e7eb;
+        border: 1px solid #334155;
+        font-size: 14px;
+    }
+
+    .password-box {
+        position: relative;
+    }
+
+    .toggle {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #94a3b8;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 5px;
+        font-weight: 500;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    .error {
+        background: rgba(239,68,68,0.15);
+        border: 1px solid #ef4444;
+        padding: 10px;
+        border-radius: 8px;
+        color: #f87171;
+        margin-bottom: 12px;
+        display: none;
+        font-size: 14px;
+    }
+
+    .link {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    a {
+        color: #38bdf8;
+        text-decoration: none;
+        font-weight: 500;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="box">
+    <h2>Welcome Back</h2>
+
+    <div id="error" class="error"></div>
+
+    <input id="username" placeholder="Enter Username">
+
+    <div class="password-box">
+        <input id="password" placeholder="Enter Password" type="password">
+        <span class="toggle" onclick="togglePassword()">Show</span>
+    </div>
+
+    <button onclick="login()">Login</button>
+
+    <div class="link">
+        Don't have an account? <a href="/signup">Create Account</a>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    let pass = document.getElementById("password");
+    let toggleBtn = document.querySelector(".toggle");
+
+    if (pass.type === "password") {
+        pass.type = "text";
+        toggleBtn.innerText = "Hide";
+    } else {
+        pass.type = "password";
+        toggleBtn.innerText = "Show";
+    }
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") login();
+});
+
+async function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value;
+
+    if (!user || !pass) {
+        showError("Please enter username and password");
+        return;
+    }
+
+    let res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username: user, password: pass})
+    });
+
+    let data = await res.json();
+
+    if (data.success) {
+        window.location.href = "/dashboard";
+    } else {
+        showError(data.message);
+    }
+}
+
+function showError(msg) {
+    let err = document.getElementById("error");
+    err.innerText = msg;
+    err.style.display = "block";
+}
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,5 @@
+nohup: ignoring input
+INFO:     Will watch for changes in these directories: ['/home/saee/nlp_assistant/templates']
+ERROR:    [Errno 98] Address already in use
+INFO:     Will watch for changes in these directories: ['/home/saee/nlp_assistant/templates']
+ERROR:    [Errno 98] Address already in use
