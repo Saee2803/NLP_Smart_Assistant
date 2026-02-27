@@ -1,0 +1,16 @@
+data/
+*.csv
+venv/
+__pycache__/
+
+# Editor swap/temp files
+*.swp
+*.swo
+*~
+
+# Log files
+nohup.out
+*.log
+
+# Accidental Python None files
+None
