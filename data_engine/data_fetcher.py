@@ -1,7 +1,7 @@
 import csv
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from glob import glob
 
 from incident_engine.alert_normalizer import AlertNormalizer
@@ -16,11 +16,20 @@ except ImportError:
     print("[!] XML parser not available, using CSV only")
 
 
+# ===========================================
+# PRODUCTION MODE DETECTION
+# ===========================================
+PRODUCTION_MODE = os.environ.get("RENDER", "false").lower() == "true" or \
+                  os.environ.get("PRODUCTION", "false").lower() == "true" or \
+                  os.environ.get("CLOUD_DEPLOY", "false").lower() == "true"
+
+
 class DataFetcher:
     """
     Loads OEM data from XML (primary) or CSV (fallback):
     - XML: Parses OEM XML files from oem_ingestion/xml_samples/
     - CSV: Falls back to CSV if no XML found
+    - DEMO: Uses demo data in production/cloud mode when no data files available
     - Prepares: normalized alerts, aggregated incidents, merged metrics
     
     Python 3.6 compatible:
@@ -36,6 +45,67 @@ class DataFetcher:
     # Configuration: CSV-first mode (enterprise standard)
     # Set to False to prefer CSV, True to prefer XML
     PREFER_XML = False
+
+    # =================================================
+    # DEMO DATA FOR CLOUD DEPLOYMENT
+    # =================================================
+    @staticmethod
+    def _generate_demo_data():
+        """
+        Generate demo/sample data for cloud deployment.
+        This allows the application to run without local CSV files.
+        """
+        now = datetime.now()
+        demo_alerts = []
+        
+        # Sample database targets
+        targets = ["PRODDB01", "PRODDB02", "DEVDB01", "TESTDB01", "HRDB01"]
+        alert_types = [
+            ("CPU_UTILIZATION", "High CPU usage detected", "Critical"),
+            ("MEMORY_PRESSURE", "Memory pressure warning", "Warning"),
+            ("TABLESPACE_FULL", "Tablespace usage critical", "Critical"),
+            ("LISTENER_DOWN", "Database listener not responding", "Critical"),
+            ("BACKUP_FAILED", "Backup job failed", "Warning"),
+            ("LONG_RUNNING_QUERY", "Query running for extended period", "Info"),
+            ("CONNECTION_SPIKE", "Unusual connection spike detected", "Warning"),
+            ("REDO_LOG_SWITCH", "Frequent redo log switches", "Info"),
+        ]
+        
+        for i in range(50):
+            alert_time = now - timedelta(hours=i * 2, minutes=(i * 7) % 60)
+            target = targets[i % len(targets)]
+            alert_type, message, severity = alert_types[i % len(alert_types)]
+            
+            demo_alerts.append({
+                "alert_time": alert_time.strftime("%d-%m-%Y %H:%M"),
+                "target": target,
+                "target_name": target,
+                "alert_state": severity,
+                "message": "{0}: {1} on {2}".format(alert_type, message, target),
+                "source": "DEMO_DATA"
+            })
+        
+        # Sample metrics
+        demo_metrics = []
+        metric_types = ["cpu_percent", "memory_percent", "disk_io", "active_sessions"]
+        for i in range(100):
+            metric_time = now - timedelta(hours=i)
+            target = targets[i % len(targets)]
+            metric = metric_types[i % len(metric_types)]
+            value = 50 + (i % 40)  # Random-ish value between 50-90
+            
+            demo_metrics.append({
+                "time": metric_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "target": target,
+                "metric": metric,
+                "value": value
+            })
+        
+        print("[*] DEMO MODE: Generated {0} sample alerts and {1} metrics".format(
+            len(demo_alerts), len(demo_metrics)
+        ))
+        
+        return demo_alerts, demo_metrics
 
     # =================================================
     # MAIN FETCH
@@ -111,10 +181,15 @@ class DataFetcher:
                 if raw_alerts:
                     print("[*] Total raw alerts from XML: {0}".format(len(raw_alerts)))
         
-        # FALLBACK: If no data source available
+        # FALLBACK: Use demo data in cloud/production mode
+        demo_metrics = []
         if not raw_alerts:
-            msg = "No data available: CSV not found and XML ingestion disabled/unavailable"
-            raise FileNotFoundError(msg)
+            if PRODUCTION_MODE:
+                print("[*] CLOUD DEPLOYMENT MODE: Using demo data (no local CSV/XML)")
+                raw_alerts, demo_metrics = self._generate_demo_data()
+            else:
+                msg = "No data available: CSV not found and XML ingestion disabled/unavailable"
+                raise FileNotFoundError(msg)
 
         # -----------------------------
         # NORMALIZE ALERTS
@@ -153,6 +228,11 @@ class DataFetcher:
         if xml_metrics:
             print("[*] Merging {0} metrics from XML".format(len(xml_metrics)))
             metrics.extend(xml_metrics)
+        
+        # Merge demo metrics if in demo mode
+        if demo_metrics:
+            print("[*] Merging {0} demo metrics".format(len(demo_metrics)))
+            metrics.extend(demo_metrics)
 
         # -----------------------------
         # FINAL LOGS

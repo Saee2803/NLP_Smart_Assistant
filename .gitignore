@@ -1,16 +1,72 @@
+# ===========================================
+# NLP Smart Assistant - Production .gitignore
+# ===========================================
+
+# ----- DATA FILES (Large) -----
 data/
 *.csv
-venv/
-__pycache__/
+*.json
+!recommendation_history.json
 
-# Editor swap/temp files
+# ----- VIRTUAL ENVIRONMENTS -----
+venv/
+.venv/
+env/
+ENV/
+
+# ----- PYTHON CACHE -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+
+# ----- DATABASE FILES -----
+*.db
+*.sqlite
+*.sqlite3
+
+# ----- LOG FILES -----
+*.log
+nohup.out
+logs/
+
+# ----- EDITOR/IDE FILES -----
 *.swp
 *.swo
 *~
+.idea/
+*.sublime-*
+.vscode/settings.json
 
-# Log files
-nohup.out
-*.log
+# ----- OS FILES -----
+.DS_Store
+Thumbs.db
 
-# Accidental Python None files
+# ----- BUILD/DIST -----
+build/
+dist/
+*.egg-info/
+*.egg
+
+# ----- TEST/DEV FILES (not needed for deployment) -----
+test_*.py
+verify_*.py
+qa_*.py
+quick_*.py
+QUICK_*.py
+
+# ----- MODEL FILES (if large) -----
+*.pkl
+*.h5
+*.pt
+*.pth
+models/
+
+# ----- ACCIDENTAL FILES -----
 None
+
+# ----- ENVIRONMENT FILES -----
+.env
+.env.local
+.env.production
